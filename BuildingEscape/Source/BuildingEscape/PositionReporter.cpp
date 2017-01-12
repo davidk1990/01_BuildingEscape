@@ -24,7 +24,7 @@ void UPositionReporter::BeginPlay()
 	// ...
 	FString objectName = GetOwner()->GetName();
 	FVector objectPos = GetOwner()->GetActorTransform().GetLocation();
-	UE_LOG(LogTemp, Warning, TEXT("%s is at position %s"), *objectName, *objectPos.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("%s is at position %s"), *objectName, *objectPos.ToString());
 	
 }
 
