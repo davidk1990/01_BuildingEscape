@@ -3,6 +3,7 @@
 #include "BuildingEscape.h"
 #include "OpenDoor.h"
 
+#define OUT
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -23,37 +24,43 @@ void UOpenDoor::BeginPlay()
 
 	// ...
 	owner = GetOwner();
-	actorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-	
-}
 
-void UOpenDoor::OpenDoor()
-{
-	owner->SetActorRotation(FRotator(0.0f, openAngle, 0.0f));
-}
+	if (!pressurePlate)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s missing pressure plate."), *GetOwner()->GetName());
+	}
 
-void UOpenDoor::CloseDoor()
-{
-	owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 }
-
 
 // Called every frame
 void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	// ...
-	if (pressurePlate->IsOverlappingActor(actorThatOpens))
+	if (GetMassOfActors() > triggerMass)
 	{
-		OpenDoor();
-		lastDoorOpenTime = GetWorld()->GetTimeSeconds();
-	}
-
-	if (GetWorld()->GetTimeSeconds() - lastDoorOpenTime > doorCloseDelay)
+		OnOpen.Broadcast();
+	}else
 	{
-		CloseDoor();
+		OnClose.Broadcast();
 	}
 		
+}
+
+float UOpenDoor::GetMassOfActors()
+{
+	float totalMass = 0.f;
+
+	TArray<AActor*> overlappingActors;
+	if (!pressurePlate) { return totalMass; }
+	pressurePlate->GetOverlappingActors(OUT overlappingActors);
+
+	for (const auto& AActor : overlappingActors)
+	{
+		totalMass += AActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		UE_LOG(LogTemp, Warning, TEXT("%s is on a pressure plate"), *AActor->GetName())
+	}
+	
+	return totalMass;
 }
 

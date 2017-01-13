@@ -34,6 +34,19 @@ private:
 
 	//Release the object you grabbed
 	void Release();
-		
 	
+	//Finds and gets the physics handle component
+	void FindPhysicsHandleComponent();
+
+	//Set up attached input component
+	void SetUpInputComponent();
+	
+	//Return hit for first physics body in reach
+	const FHitResult GetFirstPhysicsBodyInReach();
+
+	FVector GetReachLineStart();
+	
+	//Returns current end of the reach line
+	FVector GetReachLineEnd();
+
 };
